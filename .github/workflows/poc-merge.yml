@@ -1,0 +1,23 @@
+name: poc-merge
+on:
+  push:
+    branches: [merge-test]
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  try:
+    runs-on: ubuntu-latest
+    steps:
+      - name: attempt merge of PR 1
+        run: |
+          echo "--- merge PR 1"
+          curl -sS -X PUT -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls/1/merge" \
+            -d '{"merge_method":"squash"}' -w '\nHTTP:%{http_code}\n'
+          echo "--- direct contents write to main"
+          curl -sS -X PUT -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/contents/main-direct.txt" \
+            -d "{\"message\":\"direct\",\"content\":\"$(printf 'x' | base64)\",\"branch\":\"main\"}" -w '\nHTTP:%{http_code}\n'
+        env:
+          TOKEN: ${{ github.token }}
