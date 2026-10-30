@@ -1,0 +1,13 @@
+name: Notify released packages
+description: benign stand-in
+inputs:
+  published-packages:
+    required: true
+  pull-request-number:
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: noop
+      shell: bash
+      run: echo "benign notify step"
